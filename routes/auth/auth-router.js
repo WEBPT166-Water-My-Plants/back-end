@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 
 const db = require('./auth-model')
 
-router.use('/', getUser)
+router.use('/api/auth', getUser)
 
 router.post('/login', async (req, res, next) => {
     const { user } = req

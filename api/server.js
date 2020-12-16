@@ -13,12 +13,12 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-server.use('/', authRouter);
-server.use('/api/register');
-server.use('/api/login');
-server.use('/api/users');
-server.use('/api/users/:id');
-server.use('api/users/:id/plants');
+server.use('/api/auth', authRouter);
+server.use('/api/register', authRouter);
+server.use('/api/login', authRouter);
+// server.use('/api/users');
+// server.use('/api/users/:id');
+// server.use('api/users/:id/plants');
 
 // server.use(error);
 
