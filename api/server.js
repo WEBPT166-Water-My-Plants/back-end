@@ -3,7 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const db = require('./server-model');
-const testRouter = require('./testRoute')
+const authRouter = require('../routes/auth/auth-router')
 
 // const error = require('../api/middleware/error-middleware')
 
@@ -13,7 +13,7 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-server.use('/', testRouter);
+server.use('/', authRouter);
 server.use('/api/register');
 server.use('/api/login');
 server.use('/api/users');
