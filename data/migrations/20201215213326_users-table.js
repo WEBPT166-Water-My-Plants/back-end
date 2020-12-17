@@ -5,6 +5,7 @@ exports.up = function (knex) {
 			tbl.string('username').unique().notNullable();
 			tbl.integer('phone').unique().notNullable();
 			tbl.string('password').notNullable();
+			tbl.string('email').notNullable().defaultTo('email@email.com')
 		})
 		.createTable('plants', (tbl) => {
 			tbl.increments();
