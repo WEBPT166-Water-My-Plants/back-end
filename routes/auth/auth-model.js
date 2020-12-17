@@ -24,7 +24,8 @@ async function registerUser(user) {
 function generateToken(user) {
     const payload = {
         subject: user.id,
-        username: user.username
+        username: user.username,
+        password: user.password
     }
     const secret = process.env.JWT_SECRET
 

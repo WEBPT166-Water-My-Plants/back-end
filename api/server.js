@@ -14,8 +14,8 @@ server.use(helmet());
 server.use(cors());
 
 server.use('/api/auth', authRouter);
-server.use('/api/register', authRouter);
-server.use('/api/login', authRouter);
+server.use('/api/auth/register', authRouter);
+server.use('/api/auth/login', authRouter);
 server.use('/api/users', require('../routes/users/users-router'));
 server.use('/api/users/:id', require('../routes/users/users-router'));
 // server.use('api/users/:id/plants');
