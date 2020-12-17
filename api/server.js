@@ -5,7 +5,7 @@ const cors = require('cors');
 const db = require('./server-model');
 const authRouter = require('../routes/auth/auth-router')
 
-// const error = require('../api/middleware/error-middleware')
+const error = require('../api/middleware/error-middleware')
 
 const server = express();
 
@@ -20,7 +20,7 @@ server.use('/api/login', authRouter);
 // server.use('/api/users/:id');
 // server.use('api/users/:id/plants');
 
-// server.use(error);
+server.use(error);
 
 server.get('/', (req, res) => {
 	res.send('<h1>Welcome!</h1>');
