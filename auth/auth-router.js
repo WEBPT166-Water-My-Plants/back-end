@@ -5,9 +5,9 @@ const secrets = require('./secrets');
 const Users = require('./users-model');
 
 router.get('/users', validateJWT, (req, res) => {
-	Users.findBy(['id', 'username'])
+	Users.find()
 		.then((users) => {
-			res.json(users);
+			res.status(200).json(users);
 		})
 		.catch((err) => {
 			console.log(err);
@@ -36,14 +36,15 @@ router.post('/register', (req, res, next) => {
 		});
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/login', async (req, res, next) => {
 	const { username, password } = req.body;
 
-	Users.findBy({ username }).then(([user]) => {
+	Users.findBy({ username: username })
+		.then(([user]) => {
 		if (user && bcrypt.compareSync(password, user.password)) {
 			const token = generateToken(user);
-			res.json({ token });
-		} else
+			res.status(200).json({ message: 'Hello World', token });
+		} else {
 			next({
 				code: 401,
 				message: 'Invalid password',
@@ -54,7 +55,17 @@ router.post('/login', (req, res, next) => {
 					message: 'There was a problem logging in',
 				});
 			});
-	});
+			// res.status(401).json({
+			// 	message: 'Invalid credentials'
+			// })
+		}
+	})
+	.catch(err => {
+		res.status(400).json({
+			message: 'NO',
+			err
+		})
+	})
 });
 
 module.exports = router;
@@ -71,17 +82,17 @@ function generateToken(user) {
 }
 
 function validateJWT(req, res, next) {
-	console.log(req.headers)
+	console.log(req.headers);
 	try {
-		const token = req.headers.authorization.split(' ')[1]
-		req.user = jwt.verify(token, secrets.jwtSecret)
-		console.log(req.user)
-		next()
+		const token = req.headers.authorization.split(' ')[1];
+		req.user = jwt.verify(token, secrets.jwtSecret);
+		console.log(req.user);
+		next();
 	} catch (err) {
-		console.log(err)
+		console.log(err);
 		next({
 			code: 401,
-			message: 'Invalid token'
-		})
+			message: 'Invalid token',
+		});
 	}
 }
