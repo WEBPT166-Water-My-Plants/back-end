@@ -1,29 +1,28 @@
 const express = require('express');
-const helmet = require('helmet');
 const cors = require('cors');
+const helmet = require('helmet');
 
-const db = require('../routes/users/users-model');
-const authRouter = require('../routes/auth/auth-router')
-
-const error = require('../api/middleware/error-middleware')
+const auth = require('../auth/auth-router')
 
 const server = express();
 
-server.use(express.json());
 server.use(helmet());
 server.use(cors());
+server.use(express.json());
 
-server.use('/api/auth', authRouter);
-server.use('/api/auth/register', authRouter);
-server.use('/api/auth/login', authRouter);
-server.use('/api/users', require('../routes/users/users-router'));
-server.use('/api/users/:id', require('../routes/users/users-router'));
-// server.use('api/users/:id/plants');
+server.use('/api/auth', auth)
+server.get('/', (req, res) =>
+	res.json({
+		server: 'running',
+	})
+);
 
-server.use(error);
-
-server.get('/', (req, res) => {
-	res.send('<h1>Welcome!</h1>');
-});
+server.use(errorHandler);
 
 module.exports = server;
+
+function errorHandler(err, req, res, next) {
+	res.status(err.code).json({
+		message: err.message,
+	});
+}
