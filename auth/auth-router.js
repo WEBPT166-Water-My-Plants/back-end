@@ -4,6 +4,19 @@ const router = require('express').Router();
 const secrets = require('./secrets');
 const Users = require('./users-model');
 
+router.get('/users', validateJWT, (req, res) => {
+	Users.findBy(['id', 'username'])
+		.then((users) => {
+			res.json(users);
+		})
+		.catch((err) => {
+			console.log(err);
+			res.status(500).json({
+				message: 'There was a problem retrieving users',
+			});
+		});
+});
+
 router.post('/register', (req, res, next) => {
 	const { username, password } = req.body;
 	const rounds = process.env.HASH_ROUNDS || 8;
@@ -55,4 +68,20 @@ function generateToken(user) {
 		expiresIn: '1d',
 	};
 	return jwt.sign(payload, secrets.jwtSecret, options);
+}
+
+function validateJWT(req, res, next) {
+	console.log(req.headers)
+	try {
+		const token = req.headers.authorization.split(' ')[1]
+		req.user = jwt.verify(token, secrets.jwtSecret)
+		console.log(req.user)
+		next()
+	} catch (err) {
+		console.log(err)
+		next({
+			code: 401,
+			message: 'Invalid token'
+		})
+	}
 }
