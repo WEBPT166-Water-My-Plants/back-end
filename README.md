@@ -13,14 +13,15 @@ Request
 `Axios.get('https://plant-tender.herokuapp.com/api/auth/users')`  
 
 Response  
-`[ 
-  {
-    "id": 1,
-    "username": "user01",
-    "phone": 9998675309,
-    "password": "password"
-  }
-]`  
+
+    `[ 
+        {
+            "id": 1,
+            "username": "user01",
+            "phone": 9998675309,
+            "password": "password"
+        }
+    ]`  
 
 ---  
 
@@ -32,16 +33,18 @@ POST /api/auth/login
 Authenticates user credentials, returns JSON object with token  
 
 Request  
-`Axios.post('https://plant-tender.herokuapp.com/api/auth/login', {
-    username: 'frodo',
-    password: 'baggins'
-})`  
+
+    `Axios.post('https://plant-tender.herokuapp.com/api/auth/login', {
+        username: 'frodo',
+        password: 'baggins'
+    })`  
 
 Response  
-` {
-    "username": "frodo",
-    "password": "baggins"
-}`  
+
+    `{
+        "username": "frodo",
+        "password": "baggins"
+    }`  
 
 ### User Registration  
 
@@ -50,16 +53,16 @@ Authenticates user credentials, returns JSON object with token
 
 Request  
 
-`Axios.post('https://plant-tender.herokuapp.com/api/auth/register', {  
-    username: 'bilbo',  
-    password: 'baggins'  
-})`  
+    `Axios.post('https://plant-tender.herokuapp.com/api/auth/register', {  
+        username: 'bilbo',  
+        password: 'baggins'  
+    })`  
 
 Response  
 
-`{  
-    "username": "bilbo",
-    "phone": "9999999999",
-    "password": "baggins
-}`  
+    `{  
+        "username": "bilbo",
+        "phone": "9999999999",
+        "password": "baggins
+    }`  
 
