@@ -5,21 +5,49 @@ module.exports = {
 	find,
 	findBy,
 	findById,
+	update,
+	remove,
 };
 
 function find() {
-	return db('users');
+	return db('users').select('id', 'username').orderBy('id');
 }
 
-function findBy(select) {
-	return db('users').where(select).orderBy('id');
+function findBy(filter) {
+	return db('users').where(filter).orderBy('id');
 }
 
 async function add(user) {
-	const [id] = await db('users').insert(user, 'id');
-	return findById(id);
+	try {
+		const [id] = await db('users').insert(user, 'id');
+		return findById(id);
+	} catch (err) {
+		throw err;
+	}
 }
 
-function findById(id) {
-	return db('users').where({ id }).first();
+async function findById(id) {
+	try {
+		const user = await db('users').where({ id }).first();
+		return user;
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function update(id, changes) {
+	try {
+		await db('users').where({ id }).update(changes);
+		return await findById(id);
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function remove(id) {
+	try {
+		return await db('users').del().where({ id });
+	} catch (err) {
+		throw err;
+	}
 }

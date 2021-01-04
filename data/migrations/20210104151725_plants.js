@@ -8,7 +8,7 @@ exports.up = function (knex) {
 			.unique()
 			.notNullable()
 			.unsigned()
-			.references('users.id');
+			.references('plants.id');
 		tbl.string('nickname').unique();
 		tbl.string('species').notNullable().unique();
 		tbl.string('h2oFrequency').notNullable();
