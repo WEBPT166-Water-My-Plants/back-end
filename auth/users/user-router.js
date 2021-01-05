@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const Users = require('./users-model');
+const Plants = require('../plants/plants-model')
 
-router.get('/', async (req, res) => {
+router.get('/users', async (req, res) => {
 	try {
 		const user = await Users.find();
 		res.json(user);
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
 	}
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/users/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
 		const user = await Users.findById(id);
@@ -32,10 +33,10 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-router.get('/:id/plants', async (req, res) => {
+router.get('/users/:id/plants', async (req, res) => {
 	const { id } = req.params;
 	try {
-		const plant = await Users.findPlants(id);
+		const plant = await Plants.findBy(id);
 		res.json(plant);
 	} catch (err) {
 		console.log(err);
@@ -45,7 +46,7 @@ router.get('/:id/plants', async (req, res) => {
 	}
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/users/:id', async (req, res) => {
 	const { id } = req.params;
 	const changes = req.body;
 
@@ -66,7 +67,7 @@ router.put('/:id', async (req, res) => {
 	}
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/users/:id', async (req, res) => {
 	const { id } = req.params;
 
 	try {
