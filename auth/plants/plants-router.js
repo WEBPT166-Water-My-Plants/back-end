@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-router.get('/:id/plants', async (req, res) => {
+router.get('/plants/:plantId', async (req, res) => {
 	const { id } = req.params;
 
 	try {
