@@ -1,10 +1,11 @@
-const db = require('../data/dbConfig');
+const db = require('../../data/dbConfig');
 
 module.exports = {
 	add,
 	find,
 	findBy,
 	findById,
+	findPlants,
 	update,
 	remove,
 };
@@ -17,19 +18,31 @@ function findBy(filter) {
 	return db('users').where(filter).orderBy('id');
 }
 
-async function add(user) {
+async function findById(id) {
 	try {
-		const [id] = await db('users').insert(user, 'id');
-		return findById(id);
+		const user = await db('users').where({ id }).first();
+		return user;
 	} catch (err) {
 		throw err;
 	}
 }
 
-async function findById(id) {
+async function findPlants(id) {
 	try {
-		const user = await db('users').where({ id }).first();
-		return user;
+		const plant = await db('plants AS p')
+			.join('users AS u', 'u.id', 'p.plantId')
+			.where({ plantId: id })
+			.select('p.id', 'u.username');
+		return plant;
+	} catch (err) {
+		throw err;
+	}
+}
+
+async function add(user) {
+	try {
+		const [id] = await db('users').insert(user, 'id');
+		return findById(id);
 	} catch (err) {
 		throw err;
 	}
