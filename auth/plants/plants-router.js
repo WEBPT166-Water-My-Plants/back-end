@@ -45,7 +45,7 @@ router.post('/:id/plants', async (req, res) => {
 	}
 });
 
-router.put('/:id/plants/:plantId', async (req, res) => {
+router.put('/:id/plants/', async (req, res) => {
 	const { id } = req.params;
 	const changes = req.body;
 
@@ -66,7 +66,7 @@ router.put('/:id/plants/:plantId', async (req, res) => {
 	}
 });
 
-router.delete('/:id/plants/:plantId', async (req, res) => {
+router.delete('/:id/plants/', async (req, res) => {
 	const { id } = req.params;
 
 	try {

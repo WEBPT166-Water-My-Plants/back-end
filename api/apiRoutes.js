@@ -7,6 +7,6 @@ const PlantsRouter = require('../auth/plants/plants-router');
 
 router.use('/users', Restricted, UserRouter);
 router.use('/auth', AuthRouter);
-router.use('/plants', Restricted, PlantsRouter);
+router.use('/users/:id/plants', Restricted, PlantsRouter);
 
 module.exports = router;
