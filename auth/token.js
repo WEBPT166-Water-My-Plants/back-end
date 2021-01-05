@@ -5,6 +5,7 @@ function generateToken(user) {
 	const payload = {
 		subject: user.id,
 		username: user.username,
+		password: user.password
 	};
 
 	const options = {
@@ -13,4 +14,4 @@ function generateToken(user) {
 	return jwt.sign(payload, secrets.jwtSecret, options);
 }
 
-module.exports = generateToken();
+module.exports = generateToken;
