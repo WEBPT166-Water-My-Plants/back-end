@@ -15,7 +15,7 @@ server.use(express.json());
 
 server.use('/api/auth', authRouter);
 server.use('/api/users', authenticate, userRouter);
-server.use('/api/plants', authenticate, plantRouter);
+server.use('/api/users/:id/plants', authenticate, plantRouter);
 
 server.get('/', (req, res) => {
 	res.status(200).json({

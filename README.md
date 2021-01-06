@@ -65,4 +65,43 @@ Response
         "phone": "9999999999",
         "password": "baggins
     }`  
+  
+  ### Add New Plants  
+
+POST /api/users/:id/plants  
+Allows authenticated user to create plant object  
+
+Request  
+
+    `Axios.post('https://plant-tender.herokuapp.com/api/users/:id/plants', {
+        id: '',
+        nickame: 'planty_mcplantface',
+        species: 'plant',
+        h2oFrequency: 'daily'
+    })`  
+
+Response  
+
+    `{
+        id: '',
+        nickame: 'planty_mcplantface',
+        species: 'plant',
+        h2oFrequency: 'daily'
+    }`
+
+### Update Plants  
+
+PUT /api/users/:id/plants  
+Allows authenticated user to update/edit plants in list  
+
+Request  
+
+    `Axios.put('https://plant-tender.herokuapp.com/api/users/:id/plants')
+    `  
+
+Response  
+
+    `{
+        WIP
+    }`  
 
