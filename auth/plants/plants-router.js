@@ -37,7 +37,7 @@ router.post('/users/:id/plants', (req, res) => {
 		});
 });
 
-router.put('/users/:id', (req, res) => {
+router.put('/users/:id/plants', (req, res) => {
 	const plantUpdate = req.body;
 	const { id } = req.params;
 
