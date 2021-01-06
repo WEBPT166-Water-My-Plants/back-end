@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const Users = require('./users-model');
+const Plants = require('../plants/plants-model')
 
-router.get('/', async (req, res) => {
+router.get('/:id', async (req, res) => {
 	try {
 		const user = await Users.find();
 		res.json(user);
@@ -35,7 +36,7 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/plants', async (req, res) => {
 	const { id } = req.params;
 	try {
-		const plant = await Users.findPlants(id);
+		const plant = await Plants.find(id);
 		res.json(plant);
 	} catch (err) {
 		console.log(err);
@@ -61,7 +62,7 @@ router.put('/:id', async (req, res) => {
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({
-			message: 'Unable to retrieve plants',
+			message: 'Error updating user',
 		});
 	}
 });
