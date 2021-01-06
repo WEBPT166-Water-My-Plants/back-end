@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Plants = require('./plants-model');
 
-router.get('/:id/plants', (req, res) => {
+router.get('users/:id/plants', (req, res) => {
 	const { id } = req.params;
 
 	Plants.find(id)
@@ -21,7 +21,7 @@ router.get('/:id/plants', (req, res) => {
 		});
 });
 
-router.post('/:id/plants', (req, res) => {
+router.post('/users/:id/plants', (req, res) => {
 	const plantInfo = req.body;
 	const { id } = req.params;
 	plantInfo.plantId = id;
@@ -37,7 +37,7 @@ router.post('/:id/plants', (req, res) => {
 		});
 });
 
-router.put('/:id', (req, res) => {
+router.put('/users/:id', (req, res) => {
 	const plantUpdate = req.body;
 	const { id } = req.params;
 
@@ -60,7 +60,7 @@ router.put('/:id', (req, res) => {
 		});
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/users/:id', (req, res) => {
 	const { id } = erq.params;
 
 	Plants.remove(id)
