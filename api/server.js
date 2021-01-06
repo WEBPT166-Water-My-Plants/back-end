@@ -2,15 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const ApiRouter = require('../api/apiRoutes')
+const db = require('../data/dbConfig')
 
 const server = express();
 
+server.use(express.json());
 server.use(helmet());
 server.use(cors());
-server.use(express.json());
 
-server.use('/api', ApiRouter);
+// server.use('/api', ApiRouter);
 
 server.get('/', (req, res) =>
 	res.json({

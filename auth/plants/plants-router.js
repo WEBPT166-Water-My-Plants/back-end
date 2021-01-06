@@ -1,6 +1,11 @@
 const router = require('express').Router();
 const Plants = require('./plants-model');
 
+const idCheck = require('../../api/id-check-middleware')
+
+router.use(require('../../api/restricted-middleware'))
+router.use('/:id', idCheck('id', 'plant', 'plants', 'pId'))
+
 router.get('/:id', async (req, res) => {
 	const { id } = req.params;
 

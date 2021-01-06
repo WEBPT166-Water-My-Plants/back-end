@@ -1,91 +1,88 @@
 const router = require('express').Router();
-const Users = require('./users-model');
-const Plants = require('../plants/plants-model')
+const db = require('../users/users-model');
 
-router.get('/:id', async (req, res) => {
+const idCheck = require('../../api/id-check-middleware');
+const validateUser = require('../../api/validateUser-middleware');
+
+router.use(require('../restricted-middleware'));
+
+router.use('/:id', idCheck('id', 'user', 'users', 'id'));
+router.use('/:id/plants/:pId', idCheck('pId', 'plant', 'plants', 'id'));
+
+/* GET /api/ */
+
+router.get('/:id', async (req, res, next) => {
+	const { password, ...user } = req.user;
+	res.status(200).json(user);
+});
+
+router.get('/:id/plants', async (req, res, next) => {
+	const { id } = req.params;
 	try {
-		const user = await Users.find();
-		res.json(user);
+		const plants = await db.getPlants(id);
+		res.status(200).json(plants);
 	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to retrieve users',
+		next(err);
+	}
+});
+
+router.post('/:id/plants', validateUser, async (req, res, next) => {
+	const { id } = req.params;
+	let { id, nickname, species, h20Frequency, plantId, ...rest } = req.body;
+
+	if (!isEmpty(rest)) {
+		res.status(400).json({
+			message: 'Unable to add new plant',
+		});
+	} else if (nickname && species && plantId !== undefined) {
+		try {
+			req.body = {
+				nickname,
+				species,
+				plantId,
+			};
+			const plants = await db.addPlant({ ...req.body, plantId: id });
+			res.status(201).json(plants);
+		} catch (err) {
+			next(err);
+		}
+	} else {
+		res.status(400).json({
+			message: 'Missing required field',
 		});
 	}
 });
 
-router.get('/:id', async (req, res) => {
-	const { id } = req.params;
+router.put('/:id/plants/:pId', validateUser, async (req, res, next) => {
+	const { pId } = req.params;
+	const plant = { ...req.plant, ...req.body };
+	const { id, nickname, species, plantId, h20Frequency, ...rest } = plant;
+
+	if (!isEmpty(rest)) {
+		res.status(400).json({
+			message: 'Unable to edit plant',
+		});
+	} else {
+		try {
+			const edited = await db.editPlant(pId, plant);
+			res.status(200).json(edited);
+		} catch (err) {
+			next(err);
+		}
+	}
+});
+
+router.delete('/:id/plants/pId', validateUser, async (req, res, next) => {
+	const { pId } = req.params;
 	try {
-		const user = await Users.findById(id);
-		if (user) {
-			res.json(user);
+		const count = await db.removePlant(pId);
+		if (count > 0) {
+			res.status(204).end();
 		} else {
-			res.status(404).json({
-				message: `User with ID ${id} does not exist`,
-			});
+			next(`Failed to delete plant ${tId}`);
 		}
 	} catch (err) {
-		console.log(err);
-		res.status(500).sjon({
-			message: 'Unable to retieve the specified user',
-		});
-	}
-});
-
-router.get('/:id/plants', async (req, res) => {
-	const { id } = req.params;
-	try {
-		const plant = await Plants.find(id);
-		res.json(plant);
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: `Plant with ID ${id} is missing`,
-		});
-	}
-});
-
-router.put('/:id', async (req, res) => {
-	const { id } = req.params;
-	const changes = req.body;
-
-	try {
-		const update = await Users.update(id, changes);
-		if (update) {
-			res.json(update);
-		} else {
-			res.status(404).json({
-				message: 'Invalid Id',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Error updating user',
-		});
-	}
-});
-
-router.delete('/:id', async (req, res) => {
-	const { id } = req.params;
-
-	try {
-		const count = await Users.remove(id);
-		if (count) {
-			res.json({
-				message: `Deleted ${count} records from db`,
-			});
-		} else {
-			res.status(404).json({
-				message: 'invalid id',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to retrieve plants',
-		});
+		next(err);
 	}
 });
 

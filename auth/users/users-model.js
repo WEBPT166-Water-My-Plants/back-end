@@ -1,66 +1,27 @@
 const db = require('../../data/dbConfig');
 
 module.exports = {
-	add,
-	find,
-	findBy,
-	findById,
-	findPlants,
-	update,
-	remove,
+	addPlant,
+	editPlant,
+	removePlant,
 };
 
-function find() {
-	return db('users').select('id', 'username').orderBy('id');
+async function getPlants(id) {
+	const plant = await db('plants').where({ id }).first();
+
+	return plant;
 }
 
-function findBy(filter) {
-	return db('users').where(filter).orderBy('id');
+async function addPlant(plant) {
+	const id = await db('plants').insert(plant).returning('id');
+	return getPlants(plants.plantId);
 }
 
-async function findById(id) {
-	try {
-		const user = await db('users').where({ id }).first();
-		return user;
-	} catch (err) {
-		throw err;
-	}
+async function editPlant(id, plant) {
+	const count = await db('plants').update(plant).where({ id });
+	return await getPlants(id);
 }
 
-async function findPlants(id) {
-	try {
-		const plant = await db('plants AS p')
-			.join('users AS u', 'u.id', 'p.plantId')
-			.where({ plantId: id })
-			.select('p.id', 'u.username');
-		return plant;
-	} catch (err) {
-		throw err;
-	}
-}
-
-async function add(user) {
-	try {
-		const [id] = await db('users').insert(user, 'id');
-		return findById(id);
-	} catch (err) {
-		throw err;
-	}
-}
-
-async function update(id, changes) {
-	try {
-		await db('users').where({ id }).update(changes);
-		return await findById(id);
-	} catch (err) {
-		throw err;
-	}
-}
-
-async function remove(id) {
-	try {
-		return await db('users').del().where({ id });
-	} catch (err) {
-		throw err;
-	}
+async function removePlant(id) {
+	return await db('plants').del().where({ id });
 }

@@ -1,63 +1,82 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-const secrets = require('./secrets');
 const router = require('express').Router();
 
-const Users = require('./users/users-model');
-const Plants = require('./plants/plants-model');
+const db = require('./auth-model');
 
-/* ----- Attempting validation middleware ----- */
-module.exports = {
-	validUser,
-	validLogin,
-};
+router.use('/', findUser);
 
-function validLogin(creds) {
-	return Boolean(
-		creds.username && creds.password && typeof creds.password === 'string'
-	);
-}
-
-function validUser(user) {
-	return Boolean(user.username && user.password);
-}
-
-/* ----- POST /api/auth/register ----- */
-router.post('/register', (req, res) => {
-	const newUser = req.body;
-
-	if (newUser) {
-		Users.findBy({ username: newUser.username })
-			.first()
-			.then((found) => {
-				if (found) {
-					res.status(400).json({
-						message: 'Username already exists',
-					});
-					return;
-				}
-			})
-			.catch((err) => {
-				res.status(500).json({
-					message: err.message,
-				});
-				return;
+router.post('/auth/register', async (req, res, next) => {
+	if (req.user) {
+		res.status(400).json({
+			message: 'That username is taken',
+		});
+	} else {
+		const user = req.body;
+		if (!user.username || !user.password || !user.phone) {
+			res.status(400).json({
+				message: 'Missing Username or Password',
 			});
-
-		const rounds = process.env.HASH_ROUNDS || 8;
-		const hash = bcrypt.hashSync(newUser.password, rounds);
-		newUser.password = hash;
-
-		Users.add(newUser)
-			.then((id) => {
-				Users.findById(id)
-					.then((user) => {
-						user.favoritePlants = []
-						res.status(201).json(user)
-					})
-			})
+		} else {
+			try {
+				const hashed = bcrypt.hashSync(user.password, 8);
+				user.password = hashed;
+				const { password, ...newUser } = await db.registerUser(user);
+				res.status(201).json(newUser);
+			} catch (err) {
+				next(err);
+			}
+		}
 	}
 });
+
+router.post('/auth/login', async (req, res, next) => {
+	const { user } = req;
+	if (!user) {
+		res.status(404).json({
+			message: 'Invalid Username',
+		});
+	} else {
+		const { password } = req.body;
+		if (password) {
+			try {
+				if (bcrypt.compareSync(password, req.password)) {
+					res.status(200).json(user);
+				} else {
+					res.status(400).json({
+						message: 'Invalid Password',
+					});
+				}
+			} catch (err) {
+				next(err);
+			}
+		} else {
+			res.status(400).json({
+				message: 'Missing Password',
+			});
+		}
+	}
+});
+
+async function findUser(req, res, next) {
+	const { username } = req.body;
+	if (username) {
+		try {
+			const result = await db.findByUsername(req.body.username);
+			if (!result) next();
+			else {
+				const { password, ...user } = result;
+				req.password = password;
+				req.user = user;
+				next();
+			}
+		} catch (err) {
+			next(err);
+		}
+	} else {
+		res.status(400).json({
+			message: 'Missing username',
+		});
+	}
+}
 
 module.exports = router;
