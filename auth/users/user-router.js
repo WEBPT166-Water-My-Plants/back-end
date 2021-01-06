@@ -1,91 +1,72 @@
 const router = require('express').Router();
 const Users = require('./users-model');
 
-router.get('/', async (req, res) => {
-	try {
-		const user = await Users.find();
-		res.json(user);
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to retrieve users',
+router.get('/', (req, res) => {
+	Users.find()
+		.then((users) => {
+			res.status(200).json(users);
+		})
+		.catch((err) => {
+			res.send(err);
 		});
-	}
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id/plants', (req, res) => {
 	const { id } = req.params;
-	try {
-		const user = await Users.findById(id);
-		if (user) {
-			res.json(user);
-		} else {
-			res.status(404).json({
-				message: `User with ID ${id} does not exist`,
+
+	Users.findPlants(id)
+		.then((plants) => {
+			if (plants.length) {
+				res.status(201).json(plants);
+			} else {
+				res.status(404).json({
+					message: 'Unable to retrieve plants',
+				});
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({
+				message: 'Unable to retrieve plants',
 			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).sjon({
-			message: 'Unable to retieve the specified user',
 		});
-	}
 });
 
-router.get('/:id/plants', async (req, res) => {
+router.post('/:id/plants', (req, res) => {
+	const plantInfo = req.body;
 	const { id } = req.params;
-	try {
-		const plant = await Users.findPlants(id);
-		res.json(plant);
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: `Plant with ID ${id} is missing`,
+	plantInfo.id = id;
+
+	Users.addPlant(plantInfo)
+		.then((plant) => {
+			res.status(201).json(plant);
+		})
+		.catch((err) => {
+			res.status(500).json({
+				message: 'Failed to add new plant',
+			});
 		});
-	}
 });
 
-router.put('/:id', async (req, res) => {
-	const { id } = req.params;
-	const changes = req.body;
-
-	try {
-		const update = await Users.update(id, changes);
-		if (update) {
-			res.json(update);
-		} else {
-			res.status(404).json({
-				message: 'Invalid Id',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to retrieve plants',
-		});
-	}
-});
-
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', (req, res) => {
 	const { id } = req.params;
 
-	try {
-		const count = await Users.remove(id);
-		if (count) {
-			res.json({
-				message: `Deleted ${count} records from db`,
+	Users.remove(id)
+		.then((deleted) => {
+			if (deleted) {
+				res.status(200).json({
+					message: 'Deleted user',
+				});
+			} else {
+				res.status(404).json({
+					message: 'User with that Id not found',
+				});
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({
+				message: 'Unable to delete user',
 			});
-		} else {
-			res.status(404).json({
-				message: 'invalid id',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to retrieve plants',
 		});
-	}
 });
 
 module.exports = router;

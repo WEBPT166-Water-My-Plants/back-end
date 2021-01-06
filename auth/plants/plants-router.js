@@ -1,91 +1,84 @@
 const router = require('express').Router();
 const Plants = require('./plants-model');
 
-router.get('/:id', async (req, res) => {
+router.get('/:id/plants', (req, res) => {
 	const { id } = req.params;
 
-	try {
-		const plant = await Plants.findById(id);
-		if (plant) {
-			res.json(plant);
-		} else {
-			res.status(404).json({
-				message: 'Invalid Id',
+	Plants.find(id)
+		.then((plants) => {
+			if (plants.length) {
+				res.status(201).json(plants);
+			} else {
+				res.status(404).json({
+					message: 'Unable to retrieve plants',
+				});
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({
+				message: 'Unable to retrieve plants',
 			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to retrieve plants',
 		});
-	}
 });
 
-router.get('/plants/:plantId', async (req, res) => {
+router.post('/:id/plants', (req, res) => {
+	const plantInfo = req.body;
+	const { id } = req.params;
+	plantInfo.plantId = id;
+
+	Plants.add(newPlant)
+		.then((plant) => {
+			res.status(201).json(plant);
+		})
+		.catch((err) => {
+			res.status(500).json({
+				message: 'Unable to add new plant',
+			});
+		});
+});
+
+router.put('/:id', (req, res) => {
+	const plantUpdate = req.body;
 	const { id } = req.params;
 
-	try {
-		const content = await Plants.findPlants(id);
-		res.json(content);
-	} catch (err) {
-		console.log(500).json({
-			message: 'Error retrieving plants',
+	Plants.findById(id)
+		.then((plant) => {
+			if (plant) {
+				Plants.update(plantUpdate, id).then((updatedPlant) => {
+					res.json(updatedPlant);
+				});
+			} else {
+				res.status(404).json({
+					message: 'Unable to locate plant with that Id',
+				});
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({
+				message: 'Unable to update plant',
+			});
 		});
-	}
 });
 
-router.post('/:id/plants', async (req, res) => {
-	const plant = req.body;
+router.delete('/:id', (req, res) => {
+	const { id } = erq.params;
 
-	try {
-		const saved = await Plants.add(plant);
-		res.status(201).json(saved);
-	} catch (err) {
-		res.status(500).json(err);
-	}
-});
-
-router.put('/:id/plants/', async (req, res) => {
-	const { id } = req.params;
-	const changes = req.body;
-
-	try {
-		const updatedPlant = await Plants.update(id, changes);
-		if (updatedPlant) {
-			res.json(updatedPlant);
-		} else {
-			res.status(404).json({
-				message: 'Invalid Id',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to update plant',
+	Plants.remove(id)
+		.then((deleted) => {
+			if (deleted) {
+				res.json({ message: 'Delete successful' });
+			} else {
+				res.status(404).json({
+					message: 'Unable to locate plant with given Id',
+				});
+			}
+		})
+		.catch((err) => {
+			res.status(500) >
+				json({
+					message: 'Unable to delete plant',
+				});
 		});
-	}
-});
-
-router.delete('/:id/plants/', async (req, res) => {
-	const { id } = req.params;
-
-	try {
-		const count = await Plants.remove(id);
-		if (count) {
-			res.json({
-				message: `Deleted ${count} records`,
-			});
-		} else {
-			res.status(404).json({
-				message: 'Invalid Id',
-			});
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({
-			message: 'Unable to delete plant',
-		});
-	}
 });
 
 module.exports = router;
