@@ -1,27 +1,46 @@
 const db = require('../../data/dbConfig');
+const { findById } = require('../plants/plants-model');
 
 module.exports = {
+	add,
+	update,
+	remove,
+	find,
+	findBy,
+	findPlants,
 	addPlant,
-	editPlant,
-	removePlant,
 };
 
-async function getPlants(id) {
-	const plant = await db('plants').where({ id }).first();
-
-	return plant;
+function find() {
+	return db('users').select('id', 'username').orderBy('id');
 }
 
-async function addPlant(plant) {
-	const id = await db('plants').insert(plant).returning('id');
-	return getPlants(plants.plantId);
+function findPlants(pId) {
+	return db('plants').where({ plantId: pId });
 }
 
-async function editPlant(id, plant) {
-	const count = await db('plants').update(plant).where({ id });
-	return await getPlants(id);
+function findBy(filter) {
+	return db('users').where(filter).orderBy('id');
 }
 
-async function removePlant(id) {
-	return await db('plants').del().where({ id });
+function addPlant(plantData) {
+	return db('plants').insert(plantData);
+}
+
+async function add(user) {
+	try {
+		const [id] = await db('users').insert(user, 'id');
+
+		return findById(id);
+	} catch (err) {
+		throw err;
+	}
+}
+
+function update(changes, id) {
+	return db('users').where({ id }).update(changes);
+}
+
+function remove(id) {
+	return db('users').delete().where({ id });
 }

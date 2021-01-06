@@ -1,10 +1,7 @@
-module.exports = async function (req, res, next) {
-    const id = parseInt(req.params.id)
-    if (id === req.decoded.subject) {
-        next()
-    } else {
-        res.status(403).json({
-            message: 'You are not authorized to view this content'
-        })
-    }
+module.exports = {
+    isValid,
+}
+
+function isValid(user) {
+    return Boolean(user.username && user.password && typeof user.password === 'string')
 }

@@ -1,82 +1,82 @@
-const bcrypt = require('bcryptjs');
 const router = require('express').Router();
+const Users = require('./users/users-model');
 
-const db = require('./auth-model');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const secrets = require('../auth/secrets');
+const { isValid } = require('../api/validateUser-middleware');
 
-router.use('/', findUser);
+/*--- POST /api/auth/register ---*/
+router.post('/register', (req, res) => {
+	let creds = req.body;
 
-router.post('/auth/register', async (req, res, next) => {
-	if (req.user) {
-		res.status(400).json({
-			message: 'That username is taken',
-		});
-	} else {
-		const user = req.body;
-		if (!user.username || !user.password || !user.phone) {
-			res.status(400).json({
-				message: 'Missing Username or Password',
+	if (isValid(creds)) {
+		const rounds = process.env.HASH_ROUNDS || 8;
+		const hash = bcrypt.hashSync(creds.password, rounds);
+		creds.password = hash;
+
+		Users.add(creds)
+			.then((user) => {
+				res.status(201).json({ data: user });
+			})
+			.catch((err) => {
+				res.status(500).json({
+					message: err.message,
+				});
 			});
-		} else {
-			try {
-				const hashed = bcrypt.hashSync(user.password, 8);
-				user.password = hashed;
-				const { password, ...newUser } = await db.registerUser(user);
-				res.status(201).json(newUser);
-			} catch (err) {
-				next(err);
-			}
-		}
+	} else {
+		res.status(400).json({
+			message:
+				'You must provide a username, password and valid phone to register',
+		});
 	}
 });
 
-router.post('/auth/login', async (req, res, next) => {
-	const { user } = req;
-	if (!user) {
-		res.status(404).json({
-			message: 'Invalid Username',
-		});
-	} else {
-		const { password } = req.body;
-		if (password) {
-			try {
-				if (bcrypt.compareSync(password, req.password)) {
-					res.status(200).json(user);
+/*--- POST /api/auth/login ---*/
+router.post('/login', (req, res) => {
+	const { username, password } = req.body;
+
+	if (isValid(req.body)) {
+		Users.findBy({ username: username })
+			.then(([user]) => {
+				const { id } = user.id;
+
+				if (user && bcrypt.compareSync(password, user.password)) {
+					const { id } = user.id;
+					const token = generateToken(user);
+					res.status(200).json({
+						message: `Welcome ${username}!`,
+						token,
+						id: user.id,
+					});
 				} else {
-					res.status(400).json({
-						message: 'Invalid Password',
+					res.status(401).json({
+						message: 'Invalid credentials',
 					});
 				}
-			} catch (err) {
-				next(err);
-			}
-		} else {
-			res.status(400).json({
-				message: 'Missing Password',
+			})
+			.catch((err) => {
+				res.status(500).json({
+					message: 'Something went wrong',
+				});
 			});
-		}
+	} else {
+		res.status(400).json({
+			message: 'You must provide a valid username and password to log in',
+		});
 	}
 });
 
-async function findUser(req, res, next) {
-	const { username } = req.body;
-	if (username) {
-		try {
-			const result = await db.findByUsername(req.body.username);
-			if (!result) next();
-			else {
-				const { password, ...user } = result;
-				req.password = password;
-				req.user = user;
-				next();
-			}
-		} catch (err) {
-			next(err);
-		}
-	} else {
-		res.status(400).json({
-			message: 'Missing username',
-		});
+function generateToken(user) {
+	const payload = {
+		subject: user.id,
+		username: user.username
 	}
+
+	const options = {
+		expiresIn: '1d'
+	}
+	return jwt.sign(payload, secrets.jwtSecret, options)
 }
 
 module.exports = router;

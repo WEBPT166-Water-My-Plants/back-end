@@ -1,24 +1,23 @@
 const jwt = require('jsonwebtoken');
+const secrets = require('../auth/secrets');
 
 module.exports = (req, res, next) => {
-	const { token } = req.headers;
-	console.log('token: ', token);
+	const token = req.headers.authorization;
 
-	if (!token) {
-		res.status(403).json({
-			message: 'Missing authorization header',
-		});
-	} else {
-		const split = token.split(' ')[1];
-		jwt.verify(split, process.env.JWT_SECRET, (err, decoded) => {
+	if (token) {
+		jwt.verify(token, secrets.jwtSecret, (err, decoded) => {
 			if (err) {
 				res.status(401).json({
-					message: 'Invalid token',
+					message: 'You must be logged in to do that',
 				});
 			} else {
-				req.decoded = decoded;
+				req.decodedJwt = decoded;
 				next();
 			}
+		});
+	} else {
+		res.status(401).json({
+			message: 'Access denied',
 		});
 	}
 };
