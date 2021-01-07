@@ -39,7 +39,7 @@ router.post('/login', (req, res) => {
 	if (isValid(req.body)) {
 		Users.findBy({ username: username })
 			.then(([user]) => {
-				const { id } = user.id;
+				// const { id } = user.id;
 
 				if (user && bcrypt.compareSync(password, user.password)) {
 					const { id } = user.id;

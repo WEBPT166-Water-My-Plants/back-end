@@ -39,12 +39,12 @@ router.post('/:id/plants', (req, res) => {
 
 router.put('/:id/plants', (req, res) => {
 	const plantUpdate = req.body;
-	const { id } = req.params;
+	const { userId } = req.params;
 
 	Plants.findById(id)
 		.then((plant) => {
 			if (plant) {
-				Plants.update(plantUpdate, id).then((updatedPlant) => {
+				Plants.update(plantUpdate, userId).then((updatedPlant) => {
 					res.json(updatedPlant);
 				});
 			} else {
@@ -61,7 +61,7 @@ router.put('/:id/plants', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-	const { id } = erq.params;
+	const { id } = req.params;
 
 	Plants.remove(id)
 		.then((deleted) => {

@@ -10,7 +10,7 @@ module.exports = {
 };
 
 function find(id) {
-	return db('plants').where({ plantId: id });
+	return db('plants').where({ userId: id });
 }
 
 function findById(id) {
