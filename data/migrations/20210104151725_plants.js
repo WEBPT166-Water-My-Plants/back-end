@@ -3,7 +3,7 @@ const table = require('../dbConfig');
 exports.up = function (knex) {
 	return knex.schema.createTable('plants', (tbl) => {
 		tbl.increments('id');
-		tbl.integer('plantId').notNullable().references('id').inTable('users');
+		tbl.integer('userId').notNullable().references('id').inTable('users');
 		tbl.string('nickname').unique();
 		tbl.string('species').notNullable().unique();
 		tbl.string('h2oFrequency').notNullable();
