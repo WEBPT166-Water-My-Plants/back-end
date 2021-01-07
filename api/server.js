@@ -14,8 +14,8 @@ server.use(cors());
 server.use(express.json());
 
 server.use('/api/auth', authRouter);
-server.use('/api/auth/users/:id', authenticate, userRouter);
-server.use('/api/auth/users/:id/plants', authenticate, plantRouter);
+server.use('/api/users/:id', authenticate, userRouter);
+server.use('/api/users/:id/plants', authenticate, plantRouter);
 
 server.get('/', (req, res) => {
 	res.status(200).json({
