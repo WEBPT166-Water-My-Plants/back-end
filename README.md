@@ -73,8 +73,7 @@ Allows authenticated user to create plant object
 
 Request  
 
-    `Axios.post('https://plant-tender.herokuapp.com/api/users/:id/plants', {
-        id: '',
+    `Axios.post('/api/users/:id/plants', {
         nickame: 'planty_mcplantface',
         species: 'plant',
         h2oFrequency: 'daily'
@@ -82,12 +81,15 @@ Request
 
 Response  
 
-    `{
-        id: '',
-        nickame: 'planty_mcplantface',
-        species: 'plant',
-        h2oFrequency: 'daily'
-    }`
+    `[
+        {
+            "id": 4,
+            "userId": 4,
+            "nickname": "plant",
+            "species": "tomato",
+            "h2oFrequency": "daily"
+        }
+]`
 
 ### Update Plants  
 
@@ -96,12 +98,15 @@ Allows authenticated user to update/edit plants in list
 
 Request  
 
-    `Axios.put('https://plant-tender.herokuapp.com/api/users/:id/plants')
-    `  
+    `Axios.put('/api/users/:id/plants', {
+        nickname: 'string',
+        species: 'string',
+        h2oFrequency: 'string'
+    })`  
 
 Response  
 
     `{
-        WIP
+        
     }`  
 
