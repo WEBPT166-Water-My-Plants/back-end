@@ -78,7 +78,7 @@ Request
         nickame: 'planty_mcplantface',
         species: 'plant',
         h2oFrequency: 'daily'
-    })`  
+    })` 
 
 Response  
 
