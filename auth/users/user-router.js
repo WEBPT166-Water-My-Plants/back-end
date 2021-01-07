@@ -34,13 +34,14 @@ router.get('/:id/plants', (req, res) => {
 router.post('/:id/plants', (req, res) => {
 	const plantInfo = req.body;
 	const { id } = req.params;
-	plantInfo.id = id;
+	plantInfo.userId = id;
 
 	Users.addPlant(plantInfo)
 		.then((plant) => {
 			res.status(201).json(plant);
 		})
 		.catch((err) => {
+			console.log(err)
 			res.status(500).json({
 				message: 'Failed to add new plant',
 			});

@@ -11,8 +11,8 @@ router.post('/register', (req, res) => {
 	let creds = req.body;
 
 	if (isValid(creds)) {
-		const rounds = process.env.HASH_ROUNDS || 8;
-		const hash = bcrypt.hashSync(creds.password, rounds);
+		// const rounds = process.env.HASH_ROUNDS || 8;
+		const hash = bcrypt.hashSync(creds.password, 8);
 		creds.password = hash;
 
 		Users.add(creds)
@@ -56,6 +56,7 @@ router.post('/login', (req, res) => {
 				}
 			})
 			.catch((err) => {
+				console.log(err)
 				res.status(500).json({
 					message: 'Something went wrong',
 				});
