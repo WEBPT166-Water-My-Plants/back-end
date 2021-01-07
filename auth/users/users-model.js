@@ -16,21 +16,25 @@ function find() {
 }
 
 function findPlants(pId) {
-	return db('plants').where({ 'plantId': pId });
+	return db('plants').where({ plantId: pId });
 }
 
 function findBy(filter) {
 	return db('users').where(filter).orderBy('id');
 }
 
-function addPlant(plantData) {
-	return db('plants').insert(plantData);
+async function addPlant(plantData) {
+	try {
+		const [id] = await db('plants').insert(plantData);
+		return findPlants(id);
+	} catch (err) {
+		throw err;
+	}
 }
 
 async function add(user) {
 	try {
 		const [id] = await db('users').insert(user, 'id');
-
 		return findById(id);
 	} catch (err) {
 		throw err;
