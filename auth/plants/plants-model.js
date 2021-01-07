@@ -1,4 +1,5 @@
 const db = require('../../data/dbConfig');
+const { findPlants } = require('../users/users-model');
 
 module.exports = {
 	find,
@@ -16,8 +17,13 @@ function findById(id) {
 	return db('plants').where({ id }).first();
 }
 
-function add(newPlant) {
-	return db('plants').insert(newPlant);
+async function add(newPlant) {
+	try {
+		const [id] = await db('plants').insert(newPlant);
+		return findPlants(id);
+	} catch (err) {
+		throw err;
+	}
 }
 
 function update(id, changes) {
