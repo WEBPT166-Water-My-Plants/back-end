@@ -16,7 +16,7 @@ function find() {
 }
 
 function findPlants(pId) {
-	return db('plants').where({ plantId: pId });
+	return db('plants').where({ 'plantId': pId });
 }
 
 function findBy(filter) {
