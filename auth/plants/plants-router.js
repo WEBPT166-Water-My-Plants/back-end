@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Plants = require('./plants-model');
 
-router.get('/:id/plants', (req, res) => {
+router.get('/', (req, res) => {
 	const { id } = req.params;
 
 	Plants.find(id)
@@ -21,7 +21,7 @@ router.get('/:id/plants', (req, res) => {
 		});
 });
 
-router.post('/:id/plants', (req, res) => {
+router.post('/', (req, res) => {
 	const plantInfo = req.body;
 	const { id } = req.params;
 	plantInfo.plantId = id;
@@ -37,14 +37,15 @@ router.post('/:id/plants', (req, res) => {
 		});
 });
 
-router.put('/:id/plants', (req, res) => {
+router.put('/', (req, res) => {
 	const plantUpdate = req.body;
-	const { userId } = req.params;
+	const { id } = req.params;
+	plantUpdate.plantId = id;
 
 	Plants.findById(id)
 		.then((plant) => {
 			if (plant) {
-				Plants.update(plantUpdate, userId).then((updatedPlant) => {
+				Plants.update(plantUpdate, id).then((updatedPlant) => {
 					res.json(updatedPlant);
 				});
 			} else {
@@ -54,6 +55,7 @@ router.put('/:id/plants', (req, res) => {
 			}
 		})
 		.catch((err) => {
+			console.log(err);
 			res.status(500).json({
 				message: 'Unable to update plant',
 			});

@@ -19,8 +19,8 @@ function findById(id) {
 
 async function add(newPlant) {
 	try {
-		const [id] = await db('plants').insert(newPlant);
-		return findPlants(id);
+		const [userId] = await db('plants').insert(newPlant);
+		return findPlants(userId);
 	} catch (err) {
 		throw err;
 	}
