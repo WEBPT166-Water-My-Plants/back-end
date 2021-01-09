@@ -5,10 +5,9 @@ exports.up = function (knex) {
 		tbl.increments()
 		tbl.integer('userId')
 			.notNullable()
-			.unique()
 			.references('id')
 			.inTable('users');
-		tbl.string('nickname').unique();
+		tbl.string('nickname').notNullable();
 		tbl.string('species').notNullable();
 		tbl.string('h2oFrequency').notNullable();
 	});

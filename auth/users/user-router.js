@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 router.get('/:id/plants', (req, res) => {
 	const { id } = req.params;
 
-	Users.findPlants(id)
+	Users.getPlants(id)
 		.then((plants) => {
 			if (plants.length) {
 				res.status(201).json(plants);
