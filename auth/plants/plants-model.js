@@ -2,15 +2,21 @@ const db = require('../../data/dbConfig');
 const { findPlants } = require('../users/users-model');
 
 module.exports = {
-	find,
+	getPlants,
 	findById,
 	add,
-	update,
+	editPlant,
 	remove,
 };
 
-function find(id) {
-	return db('plants').where({ userId: id });
+async function getPlants(id) {
+	console.log(id, 'Inside plants.getPlants')
+	let plants = await db('plants as p')
+		.join('users as u', 'u.id', 'p.userId')
+		.where({ 'p.userId': id })
+		.select('u.id as uId', 'p.id as pId', 'u.username as username', 'p.nickname as nickname', 'p.h2oFrequency as water');
+
+	return plants;
 }
 
 function findById(id) {
@@ -20,14 +26,16 @@ function findById(id) {
 async function add(newPlant) {
 	try {
 		const [userId] = await db('plants').insert(newPlant);
-		return findPlants(userId);
+		return getPlants(userId);
 	} catch (err) {
 		throw err;
 	}
 }
 
-function update(id, changes) {
-	return db('plants').where({ id }).update(changes);
+async function editPlant(plant, id, userId) {
+	const count = await db('plants').update(plant).where({ id });
+
+	return await getPlants(userId);
 }
 
 function remove(id) {

@@ -4,7 +4,7 @@ const Plants = require('./plants-model');
 router.get('/', (req, res) => {
 	const { id } = req.params;
 
-	Plants.find(id)
+	Plants.getPlants(id)
 		.then((plants) => {
 			if (plants.length) {
 				res.status(201).json(plants);
@@ -21,10 +21,10 @@ router.get('/', (req, res) => {
 		});
 });
 
-router.post('/', (req, res) => {
+router.post('/plants', (req, res) => {
 	const plantInfo = req.body;
 	const { id } = req.params;
-	plantInfo.plantId = id;
+	plantInfo.userId = id;
 
 	Plants.add(newPlant)
 		.then((plant) => {
@@ -37,17 +37,21 @@ router.post('/', (req, res) => {
 		});
 });
 
-router.put('/', (req, res) => {
+router.put('/:userId/plants/:id', (req, res) => {
 	const plantUpdate = req.body;
-	const { id } = req.params;
-	plantUpdate.plantId = id;
+	const { userId, id } = req.params;
+	console.log(userId, 'This is the user ID')
+	console.log(id, 'Plant ID')
 
-	Plants.findById(id)
+	Plants.findById(id)	
 		.then((plant) => {
 			if (plant) {
-				Plants.update(plantUpdate, id).then((updatedPlant) => {
+				Plants.editPlant(plantUpdate, id, userId).then((updatedPlant) => {
 					res.json(updatedPlant);
-				});
+				})
+				.catch(err => {
+					console.log(err)
+				})
 			} else {
 				res.status(404).json({
 					message: 'Unable to locate plant with that Id',
@@ -62,7 +66,7 @@ router.put('/', (req, res) => {
 		});
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/plants/:id', (req, res) => {
 	const { id } = req.params;
 
 	Plants.remove(id)

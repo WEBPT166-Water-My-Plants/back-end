@@ -7,7 +7,7 @@ module.exports = {
 	remove,
 	find,
 	findBy,
-	findPlants,
+	getPlants,
 	addPlant,
 };
 
@@ -15,7 +15,7 @@ function find() {
 	return db('users').select('id', 'username').orderBy('id');
 }
 
-function findPlants(pId) {
+function getPlants(pId) {
 	return db('plants').where({ userId: pId });
 }
 
@@ -26,7 +26,7 @@ function findBy(filter) {
 async function addPlant(plantData) {
 	try {
 		const [id] = await db('plants').insert(plantData);
-		return findPlants(id);
+		return getPlants(id);
 	} catch (err) {
 		throw err;
 	}
