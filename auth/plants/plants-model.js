@@ -14,7 +14,7 @@ async function getPlants(id) {
 	let plants = await db('plants as p')
 		.join('users as u', 'u.id', 'p.userId')
 		.where({ 'p.userId': id })
-		.select('u.id as uId', 'p.id as pId', 'u.username as username', 'p.nickname as nickname', 'p.h2oFrequency as water');
+		.select('u.id as uId', 'p.id as pId', 'u.username as username', 'p.nickname as nickname', 'p.h2oFrequency as water', 'p.lastWatered as last_watered');
 
 	return plants;
 }
