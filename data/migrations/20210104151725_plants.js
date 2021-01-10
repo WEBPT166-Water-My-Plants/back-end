@@ -10,6 +10,7 @@ exports.up = function (knex) {
 		tbl.string('nickname').notNullable();
 		tbl.string('species').notNullable();
 		tbl.string('h2oFrequency').notNullable();
+		tbl.date('lastWatered');
 	});
 };
 
